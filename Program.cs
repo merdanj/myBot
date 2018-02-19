@@ -29,7 +29,7 @@ namespace myBot
             // Initializing discord client  
             discord = new DiscordClient(new DiscordConfiguration
             {
-                Token = "TToken here",
+                Token = "Token here",
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
                 LogLevel = LogLevel.Debug

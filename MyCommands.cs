@@ -43,10 +43,27 @@ namespace myBot
         [Command("role")]
         public async Task assignRole(CommandContext ctx, string uRole)
         {
+            bool given = false;
             var user = ctx.User;
             var role = ctx.Guild.Roles.FirstOrDefault(x => x.Name == uRole);
-            await ctx.Member.GrantRoleAsync(role);
-            await ctx.RespondAsync($"Your have been granted with {role.Name} role");
+            var currentRoles = ctx.Member.Roles;
+            foreach (var roles in currentRoles)
+            {
+                if(roles.Name.Equals(role.Name))
+                {
+                    given = true;
+                    break;
+                }
+            }
+            if(given)
+            {
+                await ctx.RespondAsync($"You already have {role.Name} role.");
+            }
+            else
+            {
+                await ctx.Member.GrantRoleAsync(role);
+                await ctx.RespondAsync($"Your have been granted with {role.Name} role.");
+            }
         }
 
         //Lets user create new voice channels. User have to give channel name, might change to optional later
