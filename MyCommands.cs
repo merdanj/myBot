@@ -41,20 +41,11 @@ namespace myBot
             if bot has lower privilege than admin and mods
          */
         [Command("role")]
-        public async Task assignRole(CommandContext ctx, string uRole)
+        public async Task AssignRole(CommandContext ctx, string uRole)
         {
-            bool given = false;
             var user = ctx.User;
             var role = ctx.Guild.Roles.FirstOrDefault(x => x.Name == uRole);
-            var currentRoles = ctx.Member.Roles;
-            foreach (var roles in currentRoles)
-            {
-                if(roles.Name.Equals(role.Name))
-                {
-                    given = true;
-                    break;
-                }
-            }
+            var given =  ctx.Member.Roles.Any(x => x.Name == role.Name);
             if(given)
             {
                 await ctx.RespondAsync($"You already have {role.Name} role.");
@@ -64,8 +55,31 @@ namespace myBot
                 await ctx.Member.GrantRoleAsync(role);
                 await ctx.RespondAsync($"Your have been granted with {role.Name} role.");
             }
+
         }
 
+        [Command("revoke")]
+        public async Task RevokeRole(CommandContext ctx, string uRole, ulong uID)
+        {
+            var permission = ctx.Member.Roles.Any(x => x.Name == "mods");
+            if(!permission)
+            {
+                await ctx.RespondAsync($"You don't have permission to revoke roles.");
+                return;
+            }
+            var user = ctx.Guild.Members.FirstOrDefault(x => x.Id == uID);
+            var role = ctx.Guild.Roles.FirstOrDefault(x => x.Name == uRole);
+            var given = user.Roles.Any(x => x.Name == role.Name);
+            if(given)
+            {
+                await user.RevokeRoleAsync(role);
+                await ctx.RespondAsync($"User {user.DisplayName} lost their {role.Name} role.");
+            }
+            else 
+            {
+                await ctx.RespondAsync($"User doesn't have {role.Name} role.");
+            }
+        }
         //Lets user create new voice channels. User have to give channel name, might change to optional later
         //this can create VOICE channel only.
         [Command("newVoice")]
